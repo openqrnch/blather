@@ -119,7 +119,7 @@ parameter '{}'", key)));
     Ok(buf)
   }
 
-  /// Write the Msg to a buffer.
+  /// Write the Params to a buffer.
   #[cfg(feature = "bytes")]
   pub fn encoder_write(
       &self,
@@ -148,7 +148,7 @@ parameter '{}'", key)));
     Ok(())
   }
 
-  /// Consume the Msg buffer and return the internal parameters HashMap.
+  /// Consume the Params buffer and return the internal parameters HashMap.
   pub fn into_inner(self) -> HashMap<String, String> {
     self.hm
   }
