@@ -114,6 +114,24 @@ impl Telegram {
     self.params.get_int(key)
   }
 
+  /// Calculate the size of a serialized version of this Telegram object.
+  /// If no topic has been set it is simply ignored.  In the future this might
+  /// change to something more dramatic, like a panic.  Telegrams should always
+  /// contain a topic when transmitted.
+  ///
+  /// Each line is terminated by a newline character.
+  /// The last line consists of a single newline character.
+  pub fn calc_buf_size(&self) -> usize {
+    // Calculate the required buffer size
+    let mut size = 0;
+    if let Some(ref h) = self.topic {
+      size += h.len() + 1;      // including '\n'
+    }
+
+    // Note that the Params method reserves the final terminating newline.
+    size + self.params.calc_buf_size()
+  }
+
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
 
@@ -157,15 +175,7 @@ impl Telegram {
     }
 
     // Calculate the required buffer size
-    let mut size = 0;
-    if let Some(ref h) = self.topic {
-      size += h.len() + 1;      // including '\n'
-    }
-    for (key, value) in self.params.get_inner() {
-      size += key.len() + 1;    // including ' '
-      size += value.len() + 1;  // including '\n'
-    }
-    size += 1;    // terminating '\n'
+    let size = self.calc_buf_size();
 
     // Reserve space
     buf.reserve(size);

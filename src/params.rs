@@ -98,6 +98,18 @@ parameter '{}'", key)));
     Err(Error::KeyNotFound(key.to_string()))
   }
 
+  /// Calculate the size of the buffer in serialized form.
+  /// Each entry will be a newline terminated utf-8 line.
+  /// Last line will be a single newline character.
+  pub fn calc_buf_size(&self) -> usize {
+    let mut size = 0;
+    for (key, value) in &self.hm {
+      size += key.len() + 1;    // including ' '
+      size += value.len() + 1;  // including '\n'
+    }
+    size + 1  // terminating '\n'
+  }
+
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
 
@@ -126,12 +138,7 @@ parameter '{}'", key)));
       buf: &mut BytesMut
   ) -> Result<(), Error> {
     // Calculate the required buffer size
-    let mut size = 0;
-    for (key, value) in &self.hm {
-      size += key.len() + 1;    // including ' '
-      size += value.len() + 1;  // including '\n'
-    }
-    size += 1;    // terminating '\n'
+    let size = self.calc_buf_size();
 
     // Reserve space
     buf.reserve(size);

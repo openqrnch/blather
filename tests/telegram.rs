@@ -58,4 +58,17 @@ fn display() {
   assert_eq!(s, "hello:{foo=bar}");
 }
 
+
+#[test]
+fn ser_size() {
+  let mut tg = Telegram::new_topic("hello").unwrap();
+
+  tg.add_str("foo", "bar");
+  tg.add_str("moo", "cow");
+
+  let sz = tg.calc_buf_size();
+
+  assert_eq!(sz, 6+8+8+1);
+}
+
 // vim: set ft=rust et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :

@@ -53,5 +53,17 @@ fn display() {
   assert_eq!(s, "{foo=bar}");
 }
 
+#[test]
+fn ser_size() {
+  let mut params = Params::new();
+
+  params.add_str("foo", "bar");
+  params.add_str("moo", "cow");
+
+  let sz = params.calc_buf_size();
+
+  assert_eq!(sz, 8+8+1);
+}
+
 
 // vim: set ft=rust et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :
