@@ -15,6 +15,17 @@ fn simple() {
 
 
 #[test]
+fn exist() {
+  let mut tg = Telegram::new();
+
+  tg.add_str("foo", "bar");
+  assert_eq!(tg.have_param("foo"), true);
+
+  assert_eq!(tg.have_param("nonexistent"), false);
+}
+
+
+#[test]
 fn integer() {
   let mut msg = Telegram::new();
 

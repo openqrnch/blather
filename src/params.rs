@@ -47,6 +47,12 @@ impl Params {
     self.hm.insert(key.to_string(), value.to_string());
   }
 
+  /// Returns true if the parameter with `key` exists.  Returns false
+  /// otherwise.
+  pub fn have(&self, key: &str) -> bool {
+    self.hm.contains_key(key)
+  }
+
   /// Get a parameter and convert it to a requested type.
   pub fn get_param<T: FromStr>(&self, key: &str) -> Result<T, Error> {
     if let Some(val) = self.get_str(key) {

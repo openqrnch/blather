@@ -87,6 +87,11 @@ impl Telegram {
     self.params.add_str(key, value);
   }
 
+
+  pub fn have_param(&self, key: &str) -> bool {
+    self.params.have(key)
+  }
+
   /// Get a string representation of a parameter.
   pub fn get_param<T: FromStr>(&self, key: &str) -> Result<T, Error> {
     self.params.get_param(key)

@@ -12,6 +12,17 @@ fn string() {
 
 
 #[test]
+fn exists() {
+  let mut params = Params::new();
+
+  params.add_str("foo", "bar");
+  assert_eq!(params.have("foo"), true);
+
+  assert_eq!(params.have("nonexistent"), false);
+}
+
+
+#[test]
 fn integer() {
   let mut msg = Params::new();
 
