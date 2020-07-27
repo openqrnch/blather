@@ -114,6 +114,27 @@ impl Telegram {
     self.params.get_int(key)
   }
 
+  /// Try to get the parameter value of a key and interpret it as an integer.
+  /// If the key does not exist then return a default value supplied by the
+  /// caller.
+  ///
+  /// ```
+  /// use blather::Telegram;
+  /// fn main() {
+  ///   let mut tg = Telegram::new();
+  ///   tg.add_param("num", 11);
+  ///   assert_eq!(tg.get_int_def::<u32>("num", 5).unwrap(), 11);
+  ///   assert_eq!(tg.get_int_def::<u32>("nonexistent", 17).unwrap(), 17);
+  /// }
+  /// ```
+  pub fn get_int_def<T: FromStr>(
+      &self,
+      key: &str,
+      def: T
+  ) -> Result<T, Error> {
+    self.params.get_int_def(key, def)
+  }
+
   /// Calculate the size of a serialized version of this Telegram object.
   /// If no topic has been set it is simply ignored.  In the future this might
   /// change to something more dramatic, like a panic.  Telegrams should always

@@ -44,6 +44,7 @@ fn intoparams() {
   }
 }
 
+
 #[test]
 fn display() {
   let mut params = Params::new();
@@ -52,6 +53,7 @@ fn display() {
   let s = format!("{}", params);
   assert_eq!(s, "{foo=bar}");
 }
+
 
 #[test]
 fn ser_size() {
@@ -63,6 +65,16 @@ fn ser_size() {
   let sz = params.calc_buf_size();
 
   assert_eq!(sz, 8+8+1);
+}
+
+
+#[test]
+fn def_int() {
+  let params = Params::new();
+
+  let num = params.get_int_def::<u32>("nonexistent", 42).unwrap();
+
+  assert_eq!(num, 42);
 }
 
 

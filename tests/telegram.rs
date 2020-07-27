@@ -71,4 +71,17 @@ fn ser_size() {
   assert_eq!(sz, 6+8+8+1);
 }
 
+#[test]
+fn def_int() {
+  let mut tg = Telegram::new();
+
+  tg.add_str("Num", "11");
+  assert_eq!(tg.get_int_def::<u16>("Num", 17).unwrap(), 11);
+
+  let num = tg.get_int_def::<u32>("nonexistent", 42).unwrap();
+
+  assert_eq!(num, 42);
+}
+
+
 // vim: set ft=rust et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :

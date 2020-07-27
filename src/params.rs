@@ -98,6 +98,33 @@ parameter '{}'", key)));
     Err(Error::KeyNotFound(key.to_string()))
   }
 
+  /// Try to get the value of a key and interpret it as an integer.  If the key
+  /// does not exist then return a default value supplied by the caller.
+  ///
+  /// ```
+  /// use blather::Params;
+  /// fn main() {
+  ///   let mut params = Params::new();
+  ///   params.add_param("num", 11);
+  ///   assert_eq!(params.get_int_def::<u32>("num", 5).unwrap(), 11);
+  ///   assert_eq!(params.get_int_def::<u32>("nonexistent", 17).unwrap(), 17);
+  /// }
+  /// ```
+  pub fn get_int_def<T: FromStr>(
+      &self,
+      key: &str,
+      def: T
+  ) -> Result<T, Error> {
+    if let Some(val) = self.get_str(key) {
+      if let Ok(v) = T::from_str(val) {
+        return Ok(v);
+      }
+      return Err(Error::BadFormat(format!("Unable to parse numeric value from \
+parameter '{}'", key)));
+    }
+    Ok(def)
+  }
+
   /// Calculate the size of the buffer in serialized form.
   /// Each entry will be a newline terminated utf-8 line.
   /// Last line will be a single newline character.
