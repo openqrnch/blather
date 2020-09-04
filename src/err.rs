@@ -7,20 +7,14 @@ pub enum Error {
   SerializeError(String)
 }
 
-impl std::error::Error for Error { }
+impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match &*self {
-      Error::KeyNotFound(s) => {
-        write!(f, "Parameter '{}' not found", s)
-      }
-      Error::BadFormat(s) => {
-        write!(f, "Bad format; {}", s)
-      }
-      Error::SerializeError(s) => {
-        write!(f, "Unable to serialize; {}", s)
-      }
+      Error::KeyNotFound(s) => write!(f, "Parameter '{}' not found", s),
+      Error::BadFormat(s) => write!(f, "Bad format; {}", s),
+      Error::SerializeError(s) => write!(f, "Unable to serialize; {}", s)
     }
   }
 }
