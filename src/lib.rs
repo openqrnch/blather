@@ -17,7 +17,7 @@ mod telegram;
 mod validators;
 
 pub use err::Error;
-pub use kvlines::KVLines;
+pub use kvlines::{KVLines, KeyValue};
 pub use params::Params;
 pub use telegram::Telegram;
 

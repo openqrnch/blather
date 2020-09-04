@@ -34,7 +34,7 @@ impl KVLines {
     &self.lines
   }
 
-  pub fn add_line<T: ToString, U: ToString>(&mut self, key: T, value: U) {
+  pub fn append<T: ToString, U: ToString>(&mut self, key: T, value: U) {
     self.lines.push(KeyValue {
       key: key.to_string(),
       value: value.to_string()
@@ -113,7 +113,7 @@ impl From<Vec<(String, String)>> for KVLines {
   fn from(lines: Vec<(String, String)>) -> Self {
     let mut out = KVLines { lines: Vec::new() };
     for (key, value) in lines {
-      out.add_line(key, value);
+      out.append(key, value);
     }
     out
   }
