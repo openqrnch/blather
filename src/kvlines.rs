@@ -6,7 +6,7 @@ use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct KeyValue {
   key: String,
   value: String
