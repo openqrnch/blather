@@ -12,15 +12,41 @@ fn is_topic_char(c: char) -> bool {
 pub fn validate_topic(topic: &str) -> Result<(), Error> {
   let mut chars = topic.chars();
   match chars.next() {
-    Some(c) => if !is_topic_leading_char(c) {
-      return Err(Error::BadFormat("Invalid leading character".to_string()));
+    Some(c) => {
+      if !is_topic_leading_char(c) {
+        return Err(Error::BadFormat(
+          "Invalid leading topic character".to_string()
+        ));
+      }
     }
-    None => {
-      return Err(Error::BadFormat("Empty or broken string".to_string()))
-    }
+    None => return Err(Error::BadFormat("Empty or broken topic".to_string()))
   }
+
   if chars.any(|c| !is_topic_char(c)) {
-    return Err(Error::BadFormat("Invalid heading".to_string()));
+    return Err(Error::BadFormat("Invalid topic character".to_string()));
+  }
+  Ok(())
+}
+
+
+fn is_key_char(c: char) -> bool {
+  c.is_alphanumeric() || c.is_ascii_punctuation()
+}
+
+/// Make sure that a parameter key is valid.
+pub fn validate_param_key(key: &str) -> Result<(), Error> {
+  let mut chars = key.chars();
+  match chars.next() {
+    Some(c) => {
+      if !is_key_char(c) {
+        return Err(Error::BadFormat("Invalid key character".to_string()));
+      }
+    }
+    None => return Err(Error::BadFormat("Empty or broken key".to_string()))
+  }
+
+  if chars.any(|c| !is_topic_char(c)) {
+    return Err(Error::BadFormat("Invalid key character".to_string()));
   }
   Ok(())
 }
@@ -37,19 +63,29 @@ mod tests {
   }
 
   #[test]
+  fn empty_topic() {
+    assert_eq!(
+      validate_topic(""),
+      Err(Error::BadFormat("Empty or broken topic".to_string()))
+    );
+  }
+
+  #[test]
   fn broken_topic_1() {
-    if let Err(e) = validate_topic("") {
-      match e {
-        Error::BadFormat(s) => {
-          assert_eq!(s, "Empty or broken string");
-        }
-        _ => {
-          panic!("Unexpected error");
-        }
-      }
-    } else {
-      panic!("Unexpected success");
-    }
+    assert_eq!(
+      validate_topic("foo bar"),
+      Err(Error::BadFormat("Invalid topic character".to_string()))
+    );
+  }
+
+  #[test]
+  fn broken_topic_2() {
+    assert_eq!(
+      validate_topic(" foobar"),
+      Err(Error::BadFormat(
+        "Invalid leading topic character".to_string()
+      ))
+    );
   }
 }
 

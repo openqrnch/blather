@@ -1,4 +1,4 @@
-use blather::Telegram;
+use blather::{Error, Telegram};
 
 #[test]
 fn simple() {
@@ -7,7 +7,7 @@ fn simple() {
   msg.set_topic("SomeTopic").unwrap();
   assert_eq!(msg.get_topic().unwrap(), "SomeTopic");
 
-  msg.add_str("Foo", "bar");
+  msg.add_str("Foo", "bar").unwrap();
   assert_eq!(msg.get_str("Foo").unwrap(), "bar");
 
   assert_eq!(msg.get_str("Moo"), None);
@@ -18,7 +18,7 @@ fn simple() {
 fn exist() {
   let mut tg = Telegram::new();
 
-  tg.add_str("foo", "bar");
+  tg.add_str("foo", "bar").unwrap();
   assert_eq!(tg.have_param("foo"), true);
 
   assert_eq!(tg.have_param("nonexistent"), false);
@@ -32,7 +32,7 @@ fn integer() {
   msg.set_topic("SomeTopic").unwrap();
   assert_eq!(msg.get_topic().unwrap(), "SomeTopic");
 
-  msg.add_str("Num", "64");
+  msg.add_str("Num", "64").unwrap();
   assert_eq!(msg.get_int::<u16>("Num").unwrap(), 64);
 }
 
@@ -41,7 +41,7 @@ fn integer() {
 fn size() {
   let mut msg = Telegram::new();
 
-  msg.add_param("Num", 7 as usize);
+  msg.add_param("Num", 7 as usize).unwrap();
   assert_eq!(msg.get_int::<usize>("Num").unwrap(), 7);
 }
 
@@ -50,7 +50,7 @@ fn size() {
 fn intoparams() {
   let mut msg = Telegram::new();
 
-  msg.add_str("Foo", "bar");
+  msg.add_str("Foo", "bar").unwrap();
   assert_eq!(msg.get_str("Foo").unwrap(), "bar");
   assert_eq!(msg.get_str("Moo"), None);
 
@@ -64,7 +64,7 @@ fn intoparams() {
 fn display() {
   let mut tg = Telegram::new_topic("hello").unwrap();
 
-  tg.add_param("foo", "bar");
+  tg.add_param("foo", "bar").unwrap();
   let s = format!("{}", tg);
   assert_eq!(s, "hello:{foo=bar}");
 }
@@ -74,24 +74,46 @@ fn display() {
 fn ser_size() {
   let mut tg = Telegram::new_topic("hello").unwrap();
 
-  tg.add_str("foo", "bar");
-  tg.add_str("moo", "cow");
+  tg.add_str("foo", "bar").unwrap();
+  tg.add_str("moo", "cow").unwrap();
 
   let sz = tg.calc_buf_size();
 
-  assert_eq!(sz, 6+8+8+1);
+  assert_eq!(sz, 6 + 8 + 8 + 1);
 }
 
 #[test]
 fn def_int() {
   let mut tg = Telegram::new();
 
-  tg.add_str("Num", "11");
+  tg.add_str("Num", "11").unwrap();
   assert_eq!(tg.get_int_def::<u16>("Num", 17).unwrap(), 11);
 
   let num = tg.get_int_def::<u32>("nonexistent", 42).unwrap();
 
   assert_eq!(num, 42);
+}
+
+
+#[test]
+fn bad_topic_leading() {
+  let mut tg = Telegram::new();
+  assert_eq!(
+    tg.set_topic(" SomeTopic"),
+    Err(Error::BadFormat(
+      "Invalid leading topic character".to_string()
+    ))
+  );
+}
+
+
+#[test]
+fn bad_topic() {
+  let mut tg = Telegram::new();
+  assert_eq!(
+    tg.set_topic("Some Topic"),
+    Err(Error::BadFormat("Invalid topic character".to_string()))
+  );
 }
 
 

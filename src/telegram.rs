@@ -1,9 +1,9 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
-use std::collections::HashMap;
 
 #[cfg(feature = "bytes")]
-use bytes::{BytesMut, BufMut};
+use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
 
@@ -11,7 +11,7 @@ use crate::params::Params;
 use crate::validators::validate_topic;
 
 /// Representation of a Telegram buffer.
-#[derive(Debug,Clone,Default)]
+#[derive(Debug, Clone, Default)]
 pub struct Telegram {
   topic: Option<String>,
   params: Params
@@ -23,13 +23,18 @@ impl Telegram {
   /// Note that a telegram object without a topic is invalid.  `set_topic` must
   /// be called to set a topic to make the object valid.
   pub fn new() -> Self {
-    Telegram { ..Default::default() }
+    Telegram {
+      ..Default::default()
+    }
   }
 
   /// Create a new telegram object with a topic.
   pub fn new_topic(topic: &str) -> Result<Self, Error> {
     validate_topic(topic)?;
-    Ok(Telegram { topic: Some(topic.to_string()), ..Default::default() })
+    Ok(Telegram {
+      topic: Some(topic.to_string()),
+      ..Default::default()
+    })
   }
 
   /// Clear topic and internal parameters buffer.
@@ -71,20 +76,23 @@ impl Telegram {
 
   /// Add a parameter to the telegram.
   pub fn add_param<T: ToString, U: ToString>(
-      &mut self,
-      key: T,
-      value: U
-  ) {
-    self.params.add_param(key, value);
+    &mut self,
+    key: T,
+    value: U
+  ) -> Result<(), Error> {
+    self.params.add_param(key, value)
   }
 
   /// Add a string parameter to the telegram.
+  ///
+  /// This function exists primarily for parity with a C++ library.  Just a
+  /// wrapper around `add_param()`.
   pub fn add_str<T: ToString, U: ToString>(
-      &mut self,
-      key: T,
-      value: U
-  ) {
-    self.params.add_str(key, value);
+    &mut self,
+    key: T,
+    value: U
+  ) -> Result<(), Error> {
+    self.add_param(key, value)
   }
 
 
@@ -133,9 +141,9 @@ impl Telegram {
   /// }
   /// ```
   pub fn get_int_def<T: FromStr>(
-      &self,
-      key: &str,
-      def: T
+    &self,
+    key: &str,
+    def: T
   ) -> Result<T, Error> {
     self.params.get_int_def(key, def)
   }
@@ -151,7 +159,7 @@ impl Telegram {
     // Calculate the required buffer size
     let mut size = 0;
     if let Some(ref h) = self.topic {
-      size += h.len() + 1;      // including '\n'
+      size += h.len() + 1; // including '\n'
     }
 
     // Note that the Params method reserves the final terminating newline.
@@ -192,10 +200,7 @@ impl Telegram {
 
   /// Write the Telegram to a BytesMut buffer.
   #[cfg(feature = "bytes")]
-  pub fn encoder_write(
-      &self,
-      buf: &mut BytesMut
-  ) -> Result<(), Error> {
+  pub fn encoder_write(&self, buf: &mut BytesMut) -> Result<(), Error> {
     if self.topic.is_none() {
       return Err(Error::SerializeError("Missing Telegram topic".to_string()));
     }
@@ -231,19 +236,28 @@ impl Telegram {
 
 impl From<String> for Telegram {
   fn from(topic: String) -> Self {
-    Telegram { topic: Some(topic), ..Default::default() }
+    Telegram {
+      topic: Some(topic),
+      ..Default::default()
+    }
   }
 }
 
 impl From<Params> for Telegram {
   fn from(params: Params) -> Self {
-    Telegram { params, ..Default::default() }
+    Telegram {
+      params,
+      ..Default::default()
+    }
   }
 }
 
 impl From<HashMap<String, String>> for Telegram {
   fn from(hm: HashMap<String, String>) -> Self {
-    Telegram { params: Params::from(hm), ..Default::default() }
+    Telegram {
+      params: Params::from(hm),
+      ..Default::default()
+    }
   }
 }
 
@@ -257,6 +271,5 @@ impl fmt::Display for Telegram {
     write!(f, "{}:{}", topic, self.params)
   }
 }
-
 
 // vim: set ft=rust et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :

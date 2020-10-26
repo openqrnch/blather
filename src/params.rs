@@ -1,15 +1,17 @@
-use std::fmt;
-use std::str::FromStr;
 use std::collections::HashMap;
 use std::convert::From;
+use std::fmt;
+use std::str::FromStr;
 
 #[cfg(feature = "bytes")]
-use bytes::{BytesMut, BufMut};
+use bytes::{BufMut, BytesMut};
+
+use crate::validators::validate_param_key;
 
 use crate::err::Error;
 
 /// Key/value parameters storage.
-#[derive(Debug,Clone,Default)]
+#[derive(Debug, Clone, Default)]
 pub struct Params {
   hm: HashMap<String, String>
 }
@@ -17,7 +19,9 @@ pub struct Params {
 impl Params {
   /// Create a new empty parameters object.
   pub fn new() -> Self {
-    Params { ..Default::default() }
+    Params {
+      ..Default::default()
+    }
   }
 
   /// Reset all the key/values.
@@ -31,20 +35,28 @@ impl Params {
 
   /// Add a parameter to the parameter.
   pub fn add_param<T: ToString, U: ToString>(
-      &mut self,
-      key: T,
-      value: U
-  ) {
-    self.hm.insert(key.to_string(), value.to_string());
+    &mut self,
+    key: T,
+    value: U
+  ) -> Result<(), Error> {
+    let key = key.to_string();
+
+    validate_param_key(&key)?;
+
+    self.hm.insert(key, value.to_string());
+    Ok(())
   }
 
   /// Add a string parameter to the parameter.
+  ///
+  /// Just calls `add_param()`.  This method exists for parity with a C++
+  /// interface.
   pub fn add_str<T: ToString, U: ToString>(
-      &mut self,
-      key: T,
-      value: U
-  ) {
-    self.hm.insert(key.to_string(), value.to_string());
+    &mut self,
+    key: T,
+    value: U
+  ) -> Result<(), Error> {
+    self.add_param(key, value)
   }
 
   /// Returns true if the parameter with `key` exists.  Returns false
@@ -59,8 +71,10 @@ impl Params {
       if let Ok(v) = T::from_str(val) {
         return Ok(v);
       }
-      return Err(Error::BadFormat(format!("Unable to parse value from \
-parameter '{}'", key)));
+      return Err(Error::BadFormat(format!(
+        "Unable to parse value from parameter '{}'",
+        key
+      )));
     }
     Err(Error::KeyNotFound(key.to_string()))
   }
@@ -98,8 +112,10 @@ parameter '{}'", key)));
       if let Ok(v) = T::from_str(val) {
         return Ok(v);
       }
-      return Err(Error::BadFormat(format!("Unable to parse numeric value from \
-parameter '{}'", key)));
+      return Err(Error::BadFormat(format!(
+        "Unable to parse numeric value from parameter '{}'",
+        key
+      )));
     }
     Err(Error::KeyNotFound(key.to_string()))
   }
@@ -117,16 +133,18 @@ parameter '{}'", key)));
   /// }
   /// ```
   pub fn get_int_def<T: FromStr>(
-      &self,
-      key: &str,
-      def: T
+    &self,
+    key: &str,
+    def: T
   ) -> Result<T, Error> {
     if let Some(val) = self.get_str(key) {
       if let Ok(v) = T::from_str(val) {
         return Ok(v);
       }
-      return Err(Error::BadFormat(format!("Unable to parse numeric value from \
-parameter '{}'", key)));
+      return Err(Error::BadFormat(format!(
+        "Unable to parse numeric value from parameter '{}'",
+        key
+      )));
     }
     Ok(def)
   }
@@ -137,10 +155,10 @@ parameter '{}'", key)));
   pub fn calc_buf_size(&self) -> usize {
     let mut size = 0;
     for (key, value) in &self.hm {
-      size += key.len() + 1;    // including ' '
-      size += value.len() + 1;  // including '\n'
+      size += key.len() + 1; // including ' '
+      size += value.len() + 1; // including '\n'
     }
-    size + 1  // terminating '\n'
+    size + 1 // terminating '\n'
   }
 
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
@@ -166,10 +184,7 @@ parameter '{}'", key)));
 
   /// Write the Params to a buffer.
   #[cfg(feature = "bytes")]
-  pub fn encoder_write(
-      &self,
-      buf: &mut BytesMut
-  ) -> Result<(), Error> {
+  pub fn encoder_write(&self, buf: &mut BytesMut) -> Result<(), Error> {
     // Calculate the required buffer size
     let size = self.calc_buf_size();
 

@@ -1,7 +1,7 @@
 //! A library used to represent a line-based protocol largely based on
 //! key/value pairs.
 //!
-//! A "telegram", represented by the Telegram struct, is an entity that
+//! A _telegram_, represented by the Telegram struct, is an entity that
 //! consists of a mandatory "topic" and zero or more key/value parameters.
 //!
 //! A set of "parameters", represented by the Params struct, is a set of
