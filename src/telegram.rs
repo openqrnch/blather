@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
-#[cfg(feature = "bytes")]
 use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
@@ -199,7 +198,6 @@ impl Telegram {
   }
 
   /// Write the Telegram to a BytesMut buffer.
-  #[cfg(feature = "bytes")]
   pub fn encoder_write(&self, buf: &mut BytesMut) -> Result<(), Error> {
     if self.topic.is_none() {
       return Err(Error::SerializeError("Missing Telegram topic".to_string()));

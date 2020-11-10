@@ -7,15 +7,16 @@
 //! A set of "parameters", represented by the Params struct, is a set of
 //! key/value pairs.
 //!
-//! blather does not handle transmission; it only represents the Telegram
-//! and Params buffers and provides methods to serialize them.
+//! blather handles transmission usign tokio-util's Framed framework.
 
+pub mod codec;
 mod err;
 mod kvlines;
 mod params;
 mod telegram;
 mod validators;
 
+pub use codec::Codec;
 pub use err::Error;
 pub use kvlines::{KVLines, KeyValue};
 pub use params::Params;

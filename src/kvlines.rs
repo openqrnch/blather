@@ -1,7 +1,6 @@
 use std::convert::From;
 use std::fmt;
 
-#[cfg(feature = "bytes")]
 use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
@@ -76,7 +75,6 @@ impl KVLines {
   }
 
   /// Write the Params to a buffer.
-  #[cfg(feature = "bytes")]
   pub fn encoder_write(&self, buf: &mut BytesMut) -> Result<(), Error> {
     // Calculate the required buffer size
     let size = self.calc_buf_size();

@@ -3,7 +3,6 @@ use std::convert::From;
 use std::fmt;
 use std::str::FromStr;
 
-#[cfg(feature = "bytes")]
 use bytes::{BufMut, BytesMut};
 
 use crate::validators::validate_param_key;
@@ -183,7 +182,6 @@ impl Params {
   }
 
   /// Write the Params to a buffer.
-  #[cfg(feature = "bytes")]
   pub fn encoder_write(&self, buf: &mut BytesMut) -> Result<(), Error> {
     // Calculate the required buffer size
     let size = self.calc_buf_size();
