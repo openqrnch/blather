@@ -45,7 +45,7 @@ pub fn validate_param_key(key: &str) -> Result<(), Error> {
     None => return Err(Error::BadFormat("Empty or broken key".to_string()))
   }
 
-  if chars.any(|c| !is_topic_char(c)) {
+  if chars.any(|c| !is_key_char(c)) {
     return Err(Error::BadFormat("Invalid key character".to_string()));
   }
   Ok(())
