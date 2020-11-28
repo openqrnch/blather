@@ -110,4 +110,16 @@ fn empty_key() {
 }
 
 
+#[test]
+fn boolvals() {
+  let mut params = Params::new();
+
+  params.add_bool("abool", true).unwrap();
+  params.add_bool("abooltoo", false).unwrap();
+
+  assert_eq!(params.get_bool("abool"), Ok(true));
+  assert_eq!(params.get_bool("abooltoo"), Ok(false));
+}
+
+
 // vim: set ft=rust et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :

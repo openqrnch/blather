@@ -76,6 +76,20 @@ impl Params {
   }
 
 
+  /// Add a boolean parameter.
+  pub fn add_bool<K: ToString>(
+    &mut self,
+    key: K,
+    value: bool
+  ) -> Result<(), Error> {
+    let v = match value {
+      true => "True",
+      false => "False"
+    };
+    self.add_param(key, v)
+  }
+
+
   /// Returns true if the parameter with `key` exists.  Returns false
   /// otherwise.
   pub fn have(&self, key: &str) -> bool {
@@ -96,6 +110,7 @@ impl Params {
     Err(Error::KeyNotFound(key.to_string()))
   }
 
+
   /// Get string representation of a value for a requested key.
   /// Returns `None` if the key is not found in the inner storage.  Returns
   /// `Some(&str)` otherwise.
@@ -106,6 +121,7 @@ impl Params {
     }
     None
   }
+
 
   /// Get a parameter and convert it to an integer type. The logic of this
   /// method is identical to `get_param()`.
@@ -165,6 +181,31 @@ impl Params {
     }
     Ok(def)
   }
+
+
+  /// Get a boolean value.
+  pub fn get_bool(&self, key: &str) -> Result<bool, Error> {
+    if let Some(v) = self.get_str(key) {
+      let v = v.to_ascii_lowercase();
+
+      match v.as_ref() {
+        "y" | "yes" | "t" | "true" | "1" => {
+          return Ok(true);
+        }
+        "n" | "no" | "f" | "false" | "0" => {
+          return Ok(false);
+        }
+        _ => {
+          return Err(Error::BadFormat(
+            "Unrecognized boolean value".to_string()
+          ));
+        }
+      }
+    }
+
+    Err(Error::KeyNotFound(key.to_string()))
+  }
+
 
   /// Parse the value of a key as a comma-separated list of strings and return
   /// it.  Only non-empty entries are returned.
