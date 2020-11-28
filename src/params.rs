@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::convert::From;
 use std::fmt;
 use std::str::FromStr;
@@ -28,6 +28,7 @@ impl Params {
     self.hm.clear();
   }
 
+  /// Return reference to inner HashMap.
   pub fn get_inner(&self) -> &HashMap<String, String> {
     &self.hm
   }
@@ -57,6 +58,23 @@ impl Params {
   ) -> Result<(), Error> {
     self.add_param(key, value)
   }
+
+
+  /// Add a list of strings as a comma-separated list of values.
+  pub fn add_strit<I, S>(&mut self, key: &str, c: I) -> Result<(), Error>
+  where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>
+  {
+    let mut sv = Vec::new();
+    for o in c.into_iter() {
+      sv.push(o.as_ref().to_string());
+    }
+    self.add_str(key, sv.join(","))?;
+
+    Ok(())
+  }
+
 
   /// Returns true if the parameter with `key` exists.  Returns false
   /// otherwise.
@@ -148,6 +166,42 @@ impl Params {
     Ok(def)
   }
 
+  /// Parse the value of a key as a comma-separated list of strings and return
+  /// it.  Only non-empty entries are returned.
+  pub fn get_strvec(&self, key: &str) -> Result<Vec<String>, Error> {
+    let mut ret = Vec::new();
+
+    if let Some(v) = self.get_str(key) {
+      let split = v.split(',');
+      for s in split {
+        if s.len() != 0 {
+          ret.push(s.to_string());
+        }
+      }
+    }
+
+    Ok(ret)
+  }
+
+
+  /// Parse the value of a key as a comma-separated list of uniqie strings and
+  /// return them in a HashSet.  Only non-empty entries are returned.
+  pub fn get_hashset(&self, key: &str) -> Result<HashSet<String>, Error> {
+    let mut ret = HashSet::new();
+
+    if let Some(v) = self.get_str(key) {
+      let split = v.split(',');
+      for s in split {
+        if s.len() != 0 {
+          ret.insert(s.to_string());
+        }
+      }
+    }
+
+    Ok(ret)
+  }
+
+
   /// Calculate the size of the buffer in serialized form.
   /// Each entry will be a newline terminated utf-8 line.
   /// Last line will be a single newline character.
@@ -201,7 +255,7 @@ impl Params {
     Ok(())
   }
 
-  /// Consume the Params buffer and return the internal parameters HashMap.
+  /// Consume the Params buffer and return its internal HashMap.
   pub fn into_inner(self) -> HashMap<String, String> {
     self.hm
   }

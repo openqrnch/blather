@@ -1,6 +1,6 @@
 [package]
 name = "blather"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Jan Danielsson <jan.danielsson@qrnch.com>"]
 edition = "2018"
 license = "0BSD"
@@ -15,6 +15,6 @@ tokio = { version = "0.2", features = ["net", "macros", "io-util"] }
 tokio-util = { version= "0.3", features = ["codec"] }
 
 [dev-dependencies]
-tokio-test = { version = "0.2.0" }
+tokio-test = { version = "0.2" }
 
 # vim: set ft=toml et sw=2 ts=2 sts=2 cinoptions=2 tw=79 :
