@@ -5,12 +5,14 @@ use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
 
+/// Representation of a key/value pair in `KVLines`.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct KeyValue {
   key: String,
   value: String
 }
 
+/// Ordered list of key/value pairs.
 #[derive(Debug, Clone, Default)]
 pub struct KVLines {
   lines: Vec<KeyValue>
@@ -94,7 +96,8 @@ impl KVLines {
     Ok(())
   }
 
-  /// Consume the Params buffer and return the internal parameters HashMap.
+  /// Consume the Params buffer and return the internal key/value list as a
+  /// `Vec<KeyValue>`
   pub fn into_inner(self) -> Vec<KeyValue> {
     self.lines
   }
