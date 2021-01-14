@@ -1,7 +1,5 @@
-//! A tokio-util [`Codec`] that is used to encode and decode the blather
-//! protocol.
-//!
-//! [`Codec`]: https://docs.rs/tokio-util/0.3/tokio_util/codec/index.html
+//! A [`tokio_util::codec`] Codec that is used to encode and decode the
+//! blather protocol.
 
 use std::fmt;
 use std::fs::File;
