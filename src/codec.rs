@@ -148,6 +148,7 @@ impl Codec {
     Ok(())
   }
 
+  /*
   fn getline_owned(
     &mut self,
     buf: &mut BytesMut
@@ -178,6 +179,7 @@ impl Codec {
       }
     }
   }
+  */
 
   fn get_eol_idx(&mut self, buf: &BytesMut) -> Result<Option<usize>, Error> {
     let (read_to, newline_offset) = self.find_newline(&buf);
@@ -712,6 +714,21 @@ impl Encoder<Bytes> for Codec {
   fn encode(
     &mut self,
     data: Bytes,
+    buf: &mut BytesMut
+  ) -> Result<(), crate::err::Error> {
+    buf.reserve(data.len());
+    buf.put(data);
+    Ok(())
+  }
+}
+
+
+impl Encoder<&[u8]> for Codec {
+  type Error = crate::err::Error;
+
+  fn encode(
+    &mut self,
+    data: &[u8],
     buf: &mut BytesMut
   ) -> Result<(), crate::err::Error> {
     buf.reserve(data.len());
