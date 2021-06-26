@@ -1,14 +1,28 @@
+//! Error types and error management functions.
+
 use std::fmt;
 
 use tokio::io;
 
+/// Error that `blather` can emit.
 #[derive(Debug, PartialEq)]
 pub enum Error {
+  /// The requiested key was not found.
   KeyNotFound(String),
+
+  /// The input format of a buffer was incorrect.
   BadFormat(String),
+
+  /// Unable to serialize a buffer.
   SerializeError(String),
+
+  /// A `std::io` or `tokio::io` error has occurred.
   IO(String),
+
+  /// Something occurred which was unexpected in the current state.
   BadState(String),
+
+  /// The specified size is invalid, or invalid in a specific context.
   InvalidSize(String)
 }
 

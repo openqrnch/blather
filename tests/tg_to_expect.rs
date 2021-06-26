@@ -1,4 +1,4 @@
-use tokio_stream::{self as stream, StreamExt};
+use tokio_stream::StreamExt;
 
 use tokio_test::io::Builder;
 
@@ -19,7 +19,7 @@ async fn tg_followed_by_buf() {
     if let codec::Input::Telegram(tg) = o {
       assert_eq!(tg.get_topic(), Some("hello"));
       assert_eq!(tg.get_int::<usize>("len").unwrap(), 4);
-      frm.codec_mut().expect_buf(4).unwrap();
+      frm.codec_mut().expect_bytesmut(4).unwrap();
       break;
     } else {
       panic!("Not a Telegram");
@@ -28,7 +28,7 @@ async fn tg_followed_by_buf() {
 
   while let Some(o) = frm.next().await {
     let o = o.unwrap();
-    if let codec::Input::Buf(_bm) = o {
+    if let codec::Input::BytesMut(_bm) = o {
     } else {
       panic!("Not a Buf");
     }

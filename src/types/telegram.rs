@@ -1,3 +1,7 @@
+//! Telegrams are objects that contain a _topic_ and a set of zero or more
+//! parameters.  They can be serialized into a line-based format for
+//! transmission over a network link.
+
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::str::FromStr;
@@ -6,11 +10,14 @@ use bytes::{BufMut, BytesMut};
 
 use crate::err::Error;
 
-use crate::params::Params;
-use crate::validators::validate_topic;
+use super::params::Params;
+use super::validators::validate_topic;
 
 /// Representation of a Telegram; a buffer which contains a _topic_ and a set
 /// of key/value parameters.
+///
+/// Internally the key/value parameters are represented by a [`Params`]
+/// structure.
 #[derive(Debug, Clone, Default)]
 pub struct Telegram {
   topic: Option<String>,
@@ -21,10 +28,9 @@ impl Telegram {
   /// Create a new telegram object, with an unset topic.
   ///
   /// Note that a telegram object without a topic is invalid.
-  /// [`set_topic()`](Self::set_topic) must
-  /// be called to set a topic to make the object valid.  Use
-  /// [`new_topic()`](Self::new_topic) to
-  /// create a new Telegram object with a topic.
+  /// [`set_topic()`](Self::set_topic) must be called to set a topic to make
+  /// the object valid.  Use [`new_topic()`](Self::new_topic) to create a new
+  /// Telegram object with a topic.
   pub fn new() -> Self {
     Telegram {
       ..Default::default()
@@ -402,6 +408,7 @@ impl Telegram {
   }
 
 
+  /// Serialize `Telegram` into a vector of bytes for transmission.
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
 

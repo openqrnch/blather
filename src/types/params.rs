@@ -1,3 +1,8 @@
+//! The `Params` buffer is a set of unorderded key/value pairs, with unique
+//! keys.  It's similar to a `HashMap`, but has constraints on key names and
+//! offers conventions for value layouts, such as comma-separated values for
+//! lists.
+
 use std::collections::{HashMap, HashSet};
 use std::convert::From;
 use std::fmt;
@@ -5,7 +10,7 @@ use std::str::FromStr;
 
 use bytes::{BufMut, BytesMut};
 
-use crate::validators::validate_param_key;
+use super::validators::validate_param_key;
 
 use crate::err::Error;
 
@@ -428,6 +433,7 @@ impl Params {
   }
 
 
+  /// Serialize `Params` buffer into a vector of bytes for transmission.
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
 

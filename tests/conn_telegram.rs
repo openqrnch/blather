@@ -1,4 +1,4 @@
-use tokio_stream::{self as stream, StreamExt};
+use tokio_stream::StreamExt;
 
 use tokio_test::io::Builder;
 

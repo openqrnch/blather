@@ -1,3 +1,5 @@
+//! A key/value pair list with stable ordering and non-unique keys.
+
 use std::convert::From;
 use std::fmt;
 
@@ -12,7 +14,8 @@ pub struct KeyValue {
   value: String
 }
 
-/// Ordered list of key/value pairs.
+/// Ordered list of key/value pairs, with no uniqueness constraint for the
+/// keys.
 #[derive(Debug, Clone, Default)]
 pub struct KVLines {
   lines: Vec<KeyValue>
@@ -31,10 +34,12 @@ impl KVLines {
     self.lines.clear();
   }
 
+  /// Get a reference to the inner vector of [`KeyValue`]'s.
   pub fn get_inner(&self) -> &Vec<KeyValue> {
     &self.lines
   }
 
+  /// Append a key/value entry to the end of the list.
   pub fn append<T: ToString, U: ToString>(&mut self, key: T, value: U) {
     self.lines.push(KeyValue {
       key: key.to_string(),
@@ -55,6 +60,7 @@ impl KVLines {
   }
 
 
+  /// Serialize object into a `Vec<u8>` buffer suitable for transmission.
   pub fn serialize(&self) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
 
